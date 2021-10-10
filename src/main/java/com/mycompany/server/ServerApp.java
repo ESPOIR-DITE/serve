@@ -16,6 +16,7 @@ import java.net.*;
  *
  * @author Marilyn
  */
+//@SpringBootApplication
 public class ServerApp {
      // Server socket
     private ServerSocket listener;
