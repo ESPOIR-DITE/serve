@@ -36,7 +36,7 @@ public class NewClass {
                     .email(resultSet.getString("EMAIL"))
                     .name(resultSet.getString("NAME"))
                     .surname(resultSet.getString("SURNAME"))
-                    .date(resultSet.getDate("DATE").toLocalDate())
+                    .date(resultSet.getString("DATE"))
                     .build();
             users.add(userObject);
             //System.out.print(resultSet.getString("EMAIL"));

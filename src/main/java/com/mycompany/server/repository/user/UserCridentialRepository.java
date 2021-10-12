@@ -5,11 +5,13 @@
 package com.mycompany.server.repository.user;
 
 import com.mycompany.server.domain.user.UserCredentials;
+import com.mycompany.server.domain.user.Users;
 import com.mycompany.server.repository.Repository;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,7 +25,17 @@ public class UserCridentialRepository {
     public UserCridentialRepository() throws SQLException {
         stmt = connection.createStatement();
     }
-    public void createTable() throws SQLException {
+    public boolean createUsersCredential(UserCredentials users)  {
+        try {
+            String query = "INSERT INTO USERCREDENTIAL (EMAIL,PASSWORD,ACTIVES,USERCREATOR,USERTYPE) VALUES ('"+users.getEmail()+"','"+users.getPassword()+"','"+users.getActive()+"','"+users.getCreator()+"','"+users.getUserTypeId()+"')";
+            stmt.executeUpdate(query);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+    public boolean createTable() {
       String query ="CREATE TABLE USERCREDENTIAL ("
               + "Id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY,"
               + "EMAIL varchar(30),"
@@ -32,38 +44,80 @@ public class UserCridentialRepository {
               + "USERCREATOR varchar(30),"
               + "USERTYPE varchar(30),"
               + "PRIMARY KEY (Id))";
-        boolean resultSet = stmt.execute(query);
-
-        System.out.println(resultSet);
+        boolean resultSet = false;
+        try {
+            resultSet = stmt.execute(query);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+        return true;
     }
-    public UserCredentials login(UserCredentials userCredentials) throws SQLException {
+    public UserCredentials login(UserCredentials userCredentials) {
+        System.out.println(userCredentials);
         UserCredentials users = null;
-       ResultSet resultSet = stmt.executeQuery("SELECT * FROM user_cridential where email="+ userCredentials.getEmail()+" and password="+ userCredentials.getPassword()+"");
-       while (resultSet.next()){
+        ResultSet resultSet = null;
+        try {
+            String query = "SELECT ID,EMAIL,PASSWORD,ACTIVES,USERCREATOR,USERTYPE FROM USERCREDENTIAL where EMAIL='"+userCredentials.getEmail()+"' and PASSWORD='"+userCredentials.getPassword()+"'";
+            System.out.println("query: "+query);
+            resultSet = stmt.executeQuery(query);
+        while (resultSet.next()){
            users = UserCredentials.builder()
-                   .id(resultSet.getString("id"))
-                   .email(resultSet.getString("email"))
-                   .password(resultSet.getString("password"))
-                   .active(resultSet.getBoolean("active"))
-                   .creator(resultSet.getString("creator"))
-                   .userTypeId(resultSet.getString("user_type_id"))
+                   .id(resultSet.getString("ID"))
+                   .email(resultSet.getString("EMAIL"))
+                   .password(resultSet.getString("PASSWORD"))
+                   .active(resultSet.getBoolean("ACTIVES"))
+                   .creator(resultSet.getString("USERCREATOR"))
+                   .userTypeId(resultSet.getString("USERTYPE"))
                    .build();
        }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
        return users;
     }
-    public List<UserCredentials> readAll() throws SQLException {
-        List<UserCredentials> users = null;
-        ResultSet resultSet = stmt.executeQuery("SELECT * FROM user_cridential ");
+    public UserCredentials read(String id)  {
+        UserCredentials users = null;
+        ResultSet resultSet = null;
+        try {
+            resultSet = stmt.executeQuery("SELECT * FROM USERCREDENTIAL where ID="+id);
+
         while (resultSet.next()){
-            users.add(UserCredentials.builder()
-                    .id(resultSet.getString("id"))
-                    .email(resultSet.getString("email"))
-                    .password(resultSet.getString("password"))
-                    .active(resultSet.getBoolean("active"))
-                    .creator(resultSet.getString("creator"))
-                    .userTypeId(resultSet.getString("user_type_id"))
-                    .build());
+            users = UserCredentials.builder()
+                    .id(resultSet.getString("ID"))
+                    .email(resultSet.getString("EMAIL"))
+                    .password(resultSet.getString("PASSWORD"))
+                    .active(resultSet.getBoolean("ACTIVES"))
+                    .creator(resultSet.getString("USERCREATOR"))
+                    .userTypeId(resultSet.getString("USERTYPE"))
+                    .build();
+        }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
         return users;
+    }
+    public List<UserCredentials> readAll() {
+        List<UserCredentials> userList = new ArrayList<>();
+        ResultSet resultSet = null;
+        try {
+            resultSet = stmt.executeQuery("SELECT * FROM USERCREDENTIAL ");
+
+        while (resultSet.next()){
+            UserCredentials users1 = UserCredentials.builder()
+                    .id(resultSet.getString("ID"))
+                    .email(resultSet.getString("EMAIL"))
+                    .password(resultSet.getString("PASSWORD"))
+                    .active(resultSet.getBoolean("ACTIVES"))
+                    .creator(resultSet.getString("USERCREATOR"))
+                    .userTypeId(resultSet.getString("USERTYPE"))
+                    .build();
+            userList.add(users1);
+        }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+        return userList;
     }
 }

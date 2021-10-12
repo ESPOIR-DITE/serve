@@ -28,6 +28,7 @@ public class Venue {
     private double cost;
     private int maxNumGuest;
     private boolean availability;
-    private LocalDate date;
+    private String date;
+    private String description;
     private String categoryId;
 }

@@ -4,7 +4,10 @@
  */
 package com.mycompany.server.domain.user;
 
+import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Date;
+
 import lombok.*;
 
 /**
@@ -16,10 +19,9 @@ import lombok.*;
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Users {
+public class Users implements Serializable {
     private String email;
     private String name;
     private String surname;
-    private LocalDate date;
-
+    private String date;
 }

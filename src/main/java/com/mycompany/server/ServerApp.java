@@ -7,6 +7,8 @@ package com.mycompany.server;
 
 import com.mycompany.server.domain.ServerToken;
 import com.mycompany.server.controller.Controller;
+import com.mycompany.server.factory.ServerTokenFactory;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -52,26 +54,29 @@ public class ServerApp {
         }
     }
     
-    public void processClient()
-    {
+    public void processClient() {
         // Communicate with the client
-        
+        String result = null;
         // First step: initiate channels
        try {
             ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
             out.flush();
             ObjectInputStream in = new ObjectInputStream(client.getInputStream());
-            ServerToken msg= null;
-           Controller controller = null;
+            String msg= null;
+           Controller controller = new Controller();
             
             do{
             // Step 2: communicate
-            msg = (ServerToken)in.readObject();
-            // processing
-             ServerToken response = controller.getServerToken(msg);
-            System.out.println("From CLIENT>> " + msg);
-            out.writeObject(response);
-            out.flush();
+                try{
+                    msg = (String)in.readObject();
+                    ServerToken response = ServerTokenFactory.getServerToken(msg);
+                    result =  controller.getServerToken(response);
+                    System.out.println(response.getDate());
+                    out.writeObject(result);
+                    out.flush();
+                }catch (IOException ioe) {
+//                    System.out.println("IO Exception: " + ioe.getMessage());
+                }
             }while(!msg.equals("TERMINATE"));
             // Step 3:close down
             out.close();

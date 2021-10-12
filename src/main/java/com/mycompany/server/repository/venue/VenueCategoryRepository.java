@@ -19,20 +19,25 @@ import java.util.List;
  * @author Marilyn
  */
 public class VenueCategoryRepository {
-    private final Connection connection;
+    private final Connection connection = new Repository().getConn();
     private final Statement stmt;
 
     public VenueCategoryRepository() throws SQLException {
-        this.connection = new  Repository().getConn();
         stmt = connection.createStatement();
     }
-    public void createVenueRepositoryTable() throws SQLException {
+    public boolean createVenueRepositoryTable() {
         String query ="CREATE TABLE VENUEGATEGORY("
               + "ID BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY,"
               + "CATEGORY varchar(30),"
               + "DESCRIPTION varchar(225),"
               + "PRIMARY KEY (Id))";
-        stmt.execute(query);
+        try {
+            stmt.execute(query);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+        return true;
     }
     
     public VenueCategory readVenue(String ID) throws SQLException {

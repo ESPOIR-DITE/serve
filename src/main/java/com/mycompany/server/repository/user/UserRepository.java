@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,60 +20,88 @@ import java.util.List;
  */
 public class UserRepository {
     private final Connection connection = new  Repository().getConn();
-    private final Statement stmt;
+    private Statement stmt;
 
     public UserRepository() throws SQLException {
-        stmt = connection.createStatement();
+        try {
+            stmt = connection.createStatement();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
-    public void createTable() throws SQLException {
+    public boolean createTable()  {
         // create table
-       int resultSet = stmt.executeUpdate("Create table users (email varchar(30) primary key, name varchar(30)),surname varchar(30)),date data(30))");
-        System.out.println(resultSet);
+        boolean resultSet = false;
+        try {
+            String query = "CREATE TABLE USERS (" +
+                    "Id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY," +
+                    "EMAIL varchar(30)," +
+                    "NAME varchar(30)," +
+                    "SURNAME varchar(30)," +
+                    "Date varchar(30)," +
+                    "PRIMARY KEY (Id))";
+            resultSet = stmt.execute(query);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+        return true;
     }
-    public UserCredentials login(UserCredentials userCredentials) throws SQLException {
-        UserCredentials users = null;
-       ResultSet resultSet = stmt.executeQuery("SELECT * FROM user_cridential where email="+ userCredentials.getEmail()+" and password="+ userCredentials.getPassword()+"");
-       while (resultSet.next()){
-           users = UserCredentials.builder()
-                   .id(resultSet.getString("id"))
-                   .email(resultSet.getString("email"))
-                   .password(resultSet.getString("password"))
-                   .active(resultSet.getBoolean("active"))
-                   .creator(resultSet.getString("creator"))
-                   .userTypeId(resultSet.getString("user_type_id"))
-                   .build();
-       }
-       return users;
-    }
-    public Users read(String email) throws SQLException {
+
+    public Users read(String email)  {
         Users users = null;
-        ResultSet resultSet = stmt.executeQuery("SELECT * FROM users where email="+email+"");
+        ResultSet resultSet = null;
+        try {
+            resultSet = stmt.executeQuery("SELECT * FROM USERS where EMAIL='"+email+"'");
         while (resultSet.next()){
             users = Users.builder()
                     .email(resultSet.getString("email"))
-                    .date(resultSet.getDate("date").toLocalDate())
+                    .date(resultSet.getString("date"))
                     .name(resultSet.getString("name"))
                     .surname(resultSet.getString("surname"))
                     .build();
         }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
         return users;
     }
-    public void createUsers(Users users) throws SQLException {
-        stmt.executeUpdate("insert into users values("+users.getEmail()+","+users.getName()+","+users.getSurname()+","+users.getDate()+")");
+    public boolean createUsers(Users users)  {
+        try {
+            String query = "INSERT INTO USERS (EMAIL,NAME,SURNAME,DATE) VALUES ('"+users.getEmail()+"','"+users.getName()+"','"+users.getSurname()+"','"+users.getDate()+"')";
+            stmt.executeUpdate(query);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+        return true;
     }
-    public void createUpdate(Users users) throws SQLException {
-        stmt.executeUpdate("update into users values("+users.getEmail()+","+users.getName()+","+users.getSurname()+","+users.getDate()+")");
+    public boolean createUpdate(Users users)  {
+        try {
+            stmt.executeUpdate("update into USERS values('"+users.getEmail()+"',"+users.getName()+","+users.getSurname()+","+users.getDate()+")");
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+        return true;
     }
-    public List<Users> readAll(String userName, String password) throws SQLException {
-        List<Users> users = null;
-        ResultSet resultSet = stmt.executeQuery("SELECT * FROM users ");
+    public List<Users> readAll() {
+        List<Users> users = new ArrayList<>();
+        ResultSet resultSet = null;
+        try {
+            resultSet = stmt.executeQuery("SELECT * FROM USERS ");
+
         while (resultSet.next()){
             users.add(Users.builder()
                     .email(resultSet.getString("email"))
-                    .date(resultSet.getDate("date").toLocalDate())
+                    .date(resultSet.getString("date"))
                     .name(resultSet.getString("name"))
                     .surname(resultSet.getString("surname"))
                     .build());
+        }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
         }
         return users;
     }

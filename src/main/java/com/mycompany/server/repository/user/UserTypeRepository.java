@@ -17,11 +17,16 @@ import java.util.List;
  * @author Marilyn
  */
 public class UserTypeRepository {
-    private final Connection connection = new  Repository().getConn();
-    private final Statement stmt;
+    private  Connection connection = null;
+    private  Statement stmt;
 
-    public UserTypeRepository() throws SQLException {
-        stmt = connection.createStatement();
+    public UserTypeRepository() {
+        try {
+            connection =new  Repository().getConn();
+            stmt = connection.createStatement();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
     public void createUserTypeTable() throws SQLException {
         String query ="CREATE TABLE USERCREDENTIAL ("
@@ -32,9 +37,12 @@ public class UserTypeRepository {
         stmt.execute(query);
     }
     
-    public UserType read(String ID) throws SQLException {
+    public UserType read(String ID) {
         UserType userType = null;
-        ResultSet resultSet = stmt.executeQuery("SELECT * FROM USERTYPE where ID="+ID);
+        ResultSet resultSet = null;
+        try {
+            resultSet = stmt.executeQuery("SELECT * FROM USERTYPE where ID="+ID);
+
         while (resultSet.next()){
             userType = UserType.builder()
                     .id(resultSet.getString("ID"))
@@ -42,20 +50,37 @@ public class UserTypeRepository {
                     .description(resultSet.getString("DESCRIPTION"))
                     .build();
         }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
         return userType;
     }
-    public void createUserType(UserType userType) throws SQLException {
+    public boolean createUserType(UserType userType) {
         String query ="insert into USERTYPE values("+userType.getId()+","+userType.getTypeName()+","+userType.getDescription()+")";
-        int reslt = stmt.executeUpdate(query);
-        System.out.println("restl: "+reslt);
+        try {
+            stmt.executeUpdate(query);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+       return true;
     }
-    public void UpdateUserType(UserType userType) throws SQLException {
-        int result = stmt.executeUpdate(userType.getId()+"update USERTYPE SET TYPENAME="+userType.getTypeName()+", DESCRIPTION="+userType.getDescription()+" WHERE ID="+userType.getId());
-        System.out.println("restl: "+result);
+    public boolean updateUserType(UserType userType) {
+        int result = 0;
+        try {
+            result = stmt.executeUpdate(userType.getId()+"update USERTYPE SET TYPENAME="+userType.getTypeName()+", DESCRIPTION="+userType.getDescription()+" WHERE ID="+userType.getId());
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+        return true;
     }
-    public List<UserType> readAll() throws SQLException {
+    public List<UserType> readAll() {
         List<UserType> users = null;
-        ResultSet resultSet = stmt.executeQuery("SELECT * FROM USERTYPE ");
+        ResultSet resultSet = null;
+        try {
+            resultSet = stmt.executeQuery("SELECT * FROM USERTYPE ");
         while (resultSet.next()){
             UserType userTypeObject = UserType.builder()
                     .id(resultSet.getString("ID"))
@@ -63,6 +88,10 @@ public class UserTypeRepository {
                     .description(resultSet.getString("DESCRIPTION"))
                     .build();
             users.add(userTypeObject);
+        }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
         }
         return users;
     }

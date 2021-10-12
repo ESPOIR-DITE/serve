@@ -4,11 +4,17 @@
  */
 package com.mycompany.server.controller.user;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.mycompany.server.domain.ServerToken;
 import com.mycompany.server.domain.user.UserCredentials;
+import com.mycompany.server.domain.user.Users;
 import com.mycompany.server.factory.ServerTokenFactory;
+import com.mycompany.server.factory.user.UserFactory;
 import com.mycompany.server.repository.user.UserRepository;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  *
@@ -23,22 +29,50 @@ public class UserController {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+
     }
 
-    public ServerToken getUser(ServerToken serverToken){
+    public String getUser(ServerToken serverToken){
         switch (serverToken.getRequest()){
-            case "log-in":
-                try {
-                    return logIn(serverToken);
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                }
+            case "read":
+                return read(serverToken);
+            case "create":
+                return create(serverToken);
+            case "update":
+                return update(serverToken);
+            case "reads":
+                return readAll();
 
         }
         return null;
     }
-    public ServerToken logIn(ServerToken serverToken) throws SQLException {
-        UserCredentials userCridentials = userRepository.login(ServerTokenFactory.getLoginDetail(serverToken));
-        return ServerTokenFactory.makeResponse(userCridentials);
+    public boolean createTable(){
+        return userRepository.createTable();
     }
+
+    public String read(ServerToken serverToken){
+       String email = (String) serverToken.getValue();
+        Users users = userRepository.read(email);
+        return UserFactory.getUserFromObject(users);
+    }
+    public String create(ServerToken serverToken){
+        Users user = UserFactory.getUserFromValue(serverToken.getValue());
+        return userRepository.createUsers(user)+"";
+    }
+    public String update(ServerToken serverToken){
+        Users user = UserFactory.getUserFromValue(serverToken.getValue());
+        return userRepository.createUpdate(user)+"";
+    }
+    public String readAll(){
+        String listobjec = null;
+        List<Users> usersList= userRepository.readAll();
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            listobjec = mapper.writeValueAsString(usersList);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return listobjec;
+    }
+
 }

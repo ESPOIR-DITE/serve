@@ -50,7 +50,7 @@ public class VenueRepositoryTable{
                     .cost(resultSet.getDouble("COST"))
                     .maxNumGuest(resultSet.getInt("MAXNUMGUEST"))
                     .availability(resultSet.getBoolean("AVAILABILITY"))
-                    .date(resultSet.getDate("DATE").toLocalDate())
+                    .date(resultSet.getString("DATE"))
                     .categoryId(resultSet.getString("CATEGORYID"))
                     .build();
         }
@@ -80,7 +80,7 @@ public class VenueRepositoryTable{
                     .cost(resultSet.getDouble("COST"))
                     .maxNumGuest(resultSet.getInt("MAXNUMGUEST"))
                     .availability(resultSet.getBoolean("AVAILABILITY"))
-                    .date(resultSet.getDate("DATE").toLocalDate())
+                    .date(resultSet.getString("DATE"))
                     .categoryId(resultSet.getString("CATEGORYID"))
                     .build();
         }
