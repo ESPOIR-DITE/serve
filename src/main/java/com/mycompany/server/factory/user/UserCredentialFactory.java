@@ -6,7 +6,11 @@ import java.util.StringTokenizer;
 
 public class UserCredentialFactory {
     public static String getUserCredentialString(UserCredentials userCredentials){
-        return  userCredentials.getId()+"/"+userCredentials.getEmail()+"/"+userCredentials.getPassword()+"/"+userCredentials.getActive()+"/"+userCredentials.getCreator()+"/"+userCredentials.getUserTypeId();
+        try{
+            return  userCredentials.getId()+"/"+userCredentials.getEmail()+"/"+userCredentials.getPassword()+"/"+userCredentials.getActive()+"/"+userCredentials.getCreator()+"/"+userCredentials.getUserTypeId();
+        }catch (NullPointerException nullPointerException){
+            return null;
+        }
     }
     public static UserCredentials getUserCredentialFromToken(String token){
         StringTokenizer st = new StringTokenizer(token,"/");

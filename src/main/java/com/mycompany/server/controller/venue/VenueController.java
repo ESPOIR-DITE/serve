@@ -29,6 +29,11 @@ public class VenueController {
             case "create-table": return createTable(serverToken);
             case "create": return createVenue(serverToken);
             case "reads": return readAll();
+            case "read-available": return readAllAvailable();
+            case "read-unavailable": return readAllUnAvailable();
+            case "delete": return delete(serverToken);
+            case "update-available": return updateAvailable(serverToken);
+            case "update-unavailable": return updateUnavailable(serverToken);
         }
         return null;
     }
@@ -37,6 +42,12 @@ public class VenueController {
         String email = (String) serverToken.getValue();
         Venue venue = venueRepository.readVenue(email);
         return VenueFactory.getVenueFromObject(venue);
+    }
+    public String updateUnavailable(ServerToken serverToken){
+        return venueRepository.updateUnavailable(serverToken.getValue())+"";
+    }
+    public String updateAvailable(ServerToken serverToken){
+        return venueRepository.updateAvailable(serverToken.getValue())+"";
     }
     public String createTable(ServerToken serverToken){
         Users user = UserFactory.getUserFromValue(serverToken.getValue());
@@ -48,11 +59,37 @@ public class VenueController {
     }
     public String update(ServerToken serverToken){
         Venue venue = VenueFactory.getVenueFromValue(serverToken.getValue());
-        return venueRepository.createVenue(venue)+"";
+        System.out.println("from controller"+venue);
+        return venueRepository.update(venue)+"";
+    }
+    public String delete(ServerToken serverToken){
+        return venueRepository.delete(serverToken.getValue())+"";
     }
     public String readAll(){
         String listobjec = null;
         List<Venue> usersList= venueRepository.readAll();
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            listobjec = mapper.writeValueAsString(usersList);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return listobjec;
+    }
+    public String readAllAvailable(){
+        String listobjec = null;
+        List<Venue> usersList= venueRepository.readAllAvailable();
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            listobjec = mapper.writeValueAsString(usersList);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return listobjec;
+    }
+    public String readAllUnAvailable(){
+        String listobjec = null;
+        List<Venue> usersList= venueRepository.readAllUnAvailable();
         ObjectMapper mapper = new ObjectMapper();
         try {
             listobjec = mapper.writeValueAsString(usersList);

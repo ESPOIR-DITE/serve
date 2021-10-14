@@ -27,6 +27,6 @@ public class Booking {
     private String customerEmail;
     private String userEmail;
     private String venueId;
-    private LocalDate date;
+    private String date;
     private String description;
 }

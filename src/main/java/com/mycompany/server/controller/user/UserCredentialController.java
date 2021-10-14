@@ -39,7 +39,8 @@ public class UserCredentialController {
             case "log-in": return logIn(serverToken);
             case "create-table": return create(serverToken);
             case "create": return createUserCredential(serverToken);
-            //case "readAll": return readAll();
+            case "deactivate": return deactivateUser(serverToken);
+            case "activate": return activateUser(serverToken);
         }
         return null;
     }
@@ -57,6 +58,15 @@ public class UserCredentialController {
         UserCredentials userCredentials = userCredentialRepository.login(ServerTokenFactory.getLoginDetail(serverToken));
         System.out.println(userCredentials);
         return UserCredentialFactory.getUserCredentialString(userCredentials);
+    }
+
+    public String deactivateUser(ServerToken serverToken){
+        String email = serverToken.getValue();
+      return   userCredentialRepository.deactivateUser(email)+"";
+    }
+    public String activateUser(ServerToken serverToken){
+        String email = serverToken.getValue();
+        return   userCredentialRepository.activateUser(email)+"";
     }
 
     public String read(ServerToken serverToken){

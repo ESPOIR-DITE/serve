@@ -4,6 +4,7 @@
  */
 package com.mycompany.server.controller;
 
+import com.mycompany.server.controller.customer.CustomerController;
 import com.mycompany.server.controller.user.UserController;
 import com.mycompany.server.controller.user.UserCredentialController;
 import com.mycompany.server.controller.user.UserTypeController;
@@ -18,14 +19,16 @@ import com.mycompany.server.factory.ServerTokenFactory;
 public class Controller {
     private final UserController userController;
     private final UserCredentialController userCredentialController;
-    private final UserTypeController userTypeController;
     private final VenueController venueController;
+    private final BookingController bookingController;
+    private final CustomerController customerController;
 
     public Controller() {
         this.userController = new UserController();
         this.userCredentialController = new UserCredentialController();
-        this.userTypeController = new UserTypeController();
         this.venueController = new VenueController();
+        this.bookingController = new BookingController();
+        this.customerController = new CustomerController();
     }
 
     public String getServerToken(ServerToken serverToken){
@@ -35,8 +38,9 @@ public class Controller {
         switch (serverToken.getDomain()){
             case "user": return userController.getUser(serverToken);
             case "user-credential": return userCredentialController.getUserCredentials(serverToken);
-           // case "user-type": return userTypeController.getUserType(serverToken);
+            case "booking": return bookingController.getBooking(serverToken);
             case "venue": return venueController.getVenue(serverToken);
+            case "customer": return customerController.getUser(serverToken);
         }
         return "ServerTokenFactory.makeWrongRequest()";
     }

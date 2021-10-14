@@ -7,10 +7,8 @@ package com.mycompany.server.repository.user;
 import com.mycompany.server.domain.user.UserCredentials;
 import com.mycompany.server.domain.user.Users;
 import com.mycompany.server.repository.Repository;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +45,16 @@ public class UserRepository {
         }
         return true;
     }
+    public boolean delete(String id)  {
+
+        try {
+            stmt.executeUpdate("DELETE FROM USERS where EMAIL='"+id+"'");
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+        return true;
+    }
 
     public Users read(String email)  {
         Users users = null;
@@ -77,8 +85,14 @@ public class UserRepository {
         return true;
     }
     public boolean createUpdate(Users users)  {
+        String query = "update USERS set NAME = ?,SURNAME = ?,DATE =? where EMAIL =?";
         try {
-            stmt.executeUpdate("update into USERS values('"+users.getEmail()+"',"+users.getName()+","+users.getSurname()+","+users.getDate()+")");
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1,users.getName());
+            ps.setString(2,users.getSurname());
+            ps.setString(3,users.getDate());
+            ps.setString(4,users.getEmail());
+            ps.executeUpdate();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             return false;

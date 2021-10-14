@@ -40,4 +40,29 @@ class UserCridentialRepositoryTest {
     @Test
     void readAll() {
     }
+
+    @Test
+    void testCreateUsersCredential() {
+    }
+
+    @Test
+    void testCreateTable() {
+    }
+
+    @Test
+    void testLogin() {
+    }
+
+    @Test
+    void testRead() {
+    }
+
+    @Test
+    void testReadAll() {
+    }
+
+    @Test
+    void deactivateUser() {
+        System.out.println(userCridentialRepository.deactivateUser("elwkdskl@sdd.com"));
+    }
 }

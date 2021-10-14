@@ -1,31 +1,26 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package com.mycompany.server.controller.user;
+package com.mycompany.server.controller.customer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.mycompany.server.domain.ServerToken;
-import com.mycompany.server.domain.user.UserCredentials;
+import com.mycompany.server.domain.customer.Customer;
 import com.mycompany.server.domain.user.Users;
-import com.mycompany.server.factory.ServerTokenFactory;
+import com.mycompany.server.factory.customer.CustomerFactory;
 import com.mycompany.server.factory.user.UserFactory;
+import com.mycompany.server.repository.Repository;
+import com.mycompany.server.repository.customer.CustomerRepository;
 import com.mycompany.server.repository.user.UserRepository;
-import java.sql.SQLException;
+
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author Marilyn
- */
-public class UserController {
-    private UserRepository userRepository;
+public class CustomerController {
+    private CustomerRepository customerRepository;
 
-    public UserController() {
+    public CustomerController() {
         try {
-            this.userRepository = new UserRepository();
+            this.customerRepository = new CustomerRepository();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -44,34 +39,32 @@ public class UserController {
                 return readAll();
             case "delete":
                 return delete(serverToken);
-
         }
         return null;
     }
     public boolean createTable(){
-        return userRepository.createTable();
+        return customerRepository.createTable();
     }
 
     public String read(ServerToken serverToken){
-       String email = (String) serverToken.getValue();
-        Users users = userRepository.read(email);
-        return UserFactory.getUserFromObject(users);
+        String email = (String) serverToken.getValue();
+        Customer users = customerRepository.read(email);
+        return CustomerFactory.getCustomerFromObject(users);
     }
     public String create(ServerToken serverToken){
-        Users user = UserFactory.getUserFromValue(serverToken.getValue());
-        return userRepository.createUsers(user)+"";
-    }
-    public String delete(ServerToken serverToken){
-        return userRepository.delete(serverToken.getValue())+"";
+        Customer user = CustomerFactory.getCustomerFromValue(serverToken.getValue());
+        return customerRepository.createUsers(user)+"";
     }
     public String update(ServerToken serverToken){
-        Users user = UserFactory.getUserFromValue(serverToken.getValue());
-        System.out.println(user);
-        return userRepository.createUpdate(user)+"";
+        Customer user = CustomerFactory.getCustomerFromValue(serverToken.getValue());
+        return customerRepository.Update(user)+"";
+    }
+    public String delete(ServerToken serverToken){
+        return customerRepository.delete(serverToken.getValue())+"";
     }
     public String readAll(){
         String listobjec = null;
-        List<Users> usersList= userRepository.readAll();
+        List<Customer> usersList= customerRepository.readAll();
         ObjectMapper mapper = new ObjectMapper();
         try {
             listobjec = mapper.writeValueAsString(usersList);
@@ -80,5 +73,4 @@ public class UserController {
         }
         return listobjec;
     }
-
 }

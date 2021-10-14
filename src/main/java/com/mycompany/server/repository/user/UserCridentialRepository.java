@@ -7,10 +7,8 @@ package com.mycompany.server.repository.user;
 import com.mycompany.server.domain.user.UserCredentials;
 import com.mycompany.server.domain.user.Users;
 import com.mycompany.server.repository.Repository;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,7 +78,7 @@ public class UserCridentialRepository {
         UserCredentials users = null;
         ResultSet resultSet = null;
         try {
-            resultSet = stmt.executeQuery("SELECT * FROM USERCREDENTIAL where ID="+id);
+            resultSet = stmt.executeQuery("SELECT * FROM USERCREDENTIAL where EMAIL='"+id+"'");
 
         while (resultSet.next()){
             users = UserCredentials.builder()
@@ -119,5 +117,31 @@ public class UserCridentialRepository {
             return null;
         }
         return userList;
+    }
+    public boolean deactivateUser(String email)  {
+        String query = "update USERCREDENTIAL set ACTIVES = ? where EMAIL =?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1,"false");
+            ps.setString(2,email);
+            ps.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+    public boolean activateUser(String email)  {
+        String query = "update USERCREDENTIAL set ACTIVES = ? where EMAIL =?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1,"true");
+            ps.setString(2,email);
+            ps.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }

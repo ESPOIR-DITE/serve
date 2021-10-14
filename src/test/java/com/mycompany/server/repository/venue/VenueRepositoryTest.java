@@ -43,6 +43,34 @@ VenueRepository venueRepository = new VenueRepository();
 
     @Test
     void readAll() {
-        System.out.println(venueRepository.readAll());
+        System.out.println(venueRepository.readAllAvailable());
+    }
+
+    @Test
+    void testReadAll() {
+    }
+
+    @Test
+    void readAllAvailable() {
+    }
+
+    @Test
+    void readAllUnAvailable() {
+    }
+
+    @Test
+    void update() {
+        Venue venue = Venue.builder()
+                .id(103)
+                .name("test")
+                .maxNumGuest(12)
+                .location("none")
+                .description("something nice one")
+                .cost(100)
+                .categoryId("23223")
+                .availability(true)
+                .date("10-29-2010")
+                .build();
+        venueRepository.update(venue);
     }
 }

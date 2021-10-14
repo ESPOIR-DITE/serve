@@ -4,14 +4,12 @@
  */
 package com.mycompany.server.repository.venue;
 
+import com.mycompany.server.domain.Booking;
 import com.mycompany.server.domain.venue.Venue;
 import com.mycompany.server.domain.venue.VenueCategory;
 import com.mycompany.server.repository.Repository;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +44,15 @@ public class VenueRepository {
         }
         return true;
     }
-    
+    public boolean delete(String id)  {
+        try {
+            stmt.executeUpdate("DELETE FROM VENUE where ID="+id+"");
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+        return true;
+    }
     public Venue readVenue(String ID)  {
         Venue venue = null;
         ResultSet resultSet = null;
@@ -80,10 +86,10 @@ public class VenueRepository {
         }
         return true;
     }
-    public void UpdateUserType(VenueCategory venue) throws SQLException {
-        String query ="UPDATE VENUEGATEGORY SET ID="+venue.getId()+", CATEGORY="+venue.getCategory()+",DESCRIPTION="+venue.getDescription()+")";
-        System.out.println("result: "+query);
-    }
+//    public void UpdateUserType(VenueCategory venue) throws SQLException {
+//        String query ="UPDATE VENUEGATEGORY SET ID="+venue.getId()+", CATEGORY="+venue.getCategory()+",DESCRIPTION="+venue.getDescription()+")";
+//        System.out.println("result: "+query);
+//    }
     public List<Venue> readAll()  {
         List<Venue> venues = new ArrayList();
         ResultSet resultSet = null;
@@ -109,5 +115,103 @@ public class VenueRepository {
             return null;
         }
         return venues;
+    }
+    public List<Venue> readAllAvailable()  {
+        List<Venue> venues = new ArrayList();
+        ResultSet resultSet = null;
+        try {
+            resultSet = stmt.executeQuery("SELECT * FROM VENUE where AVAILABILITY='true'");
+
+            while (resultSet.next()){
+            Venue venue = Venue.builder()
+                    .id(resultSet.getInt("ID"))
+                    .name(resultSet.getString("NAME"))
+                    .location(resultSet.getString("LOCATION"))
+                    .cost(resultSet.getDouble("COST"))
+                    .maxNumGuest(resultSet.getInt("MAXNUMGUEST"))
+                    .availability(resultSet.getBoolean("AVAILABILITY"))
+                    .date(resultSet.getString("DATE"))
+                    .description(resultSet.getString("DESCRIPTIONS"))
+                    .categoryId(resultSet.getString("CATEGORYID"))
+                    .build();
+            venues.add(venue);
+        }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+        return venues;
+    }
+    public List<Venue> readAllUnAvailable()  {
+        List<Venue> venues = new ArrayList();
+        ResultSet resultSet = null;
+        try {
+            resultSet = stmt.executeQuery("SELECT * FROM VENUE where AVAILABILITY='false'");
+
+            while (resultSet.next()){
+            Venue venue = Venue.builder()
+                    .id(resultSet.getInt("ID"))
+                    .name(resultSet.getString("NAME"))
+                    .location(resultSet.getString("LOCATION"))
+                    .cost(resultSet.getDouble("COST"))
+                    .maxNumGuest(resultSet.getInt("MAXNUMGUEST"))
+                    .availability(resultSet.getBoolean("AVAILABILITY"))
+                    .date(resultSet.getString("DATE"))
+                    .description(resultSet.getString("DESCRIPTIONS"))
+                    .categoryId(resultSet.getString("CATEGORYID"))
+                    .build();
+            venues.add(venue);
+        }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+        return venues;
+    }
+    public boolean update(Venue venue)  {
+        String query = "UPDATE VENUE SET NAME=?,LOCATION=?,COST=?,MAXNUMGUEST=?,AVAILABILITY=?,DATE=?,DESCRIPTIONS=?,CATEGORYID=? WHERE ID=?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1,venue.getName());
+            ps.setString(2,venue.getLocation());
+            ps.setDouble(3,venue.getCost());
+            ps.setInt(4,venue.getMaxNumGuest());
+            ps.setString(5,venue.isAvailability()+"");
+            ps.setString(6,venue.getDate()+"");
+            ps.setString(7,venue.getDescription());
+            ps.setString(8,venue.getCategoryId());
+            ps.setInt(9,venue.getId());
+            ps.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+    public boolean updateAvailable(String id)  {
+        String query = "UPDATE VENUE SET AVAILABILITY=? WHERE ID=?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1,"true");
+            ps.setString(2,id);
+            ps.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+    public boolean updateUnavailable(String id)  {
+        String query = "UPDATE VENUE SET AVAILABILITY=? WHERE ID=?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1,"false");
+            ps.setString(2,id);
+            ps.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }
