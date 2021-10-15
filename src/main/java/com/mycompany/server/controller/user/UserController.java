@@ -29,7 +29,6 @@ public class UserController {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-
     }
 
     public String getUser(ServerToken serverToken){
