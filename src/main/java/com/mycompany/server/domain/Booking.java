@@ -18,7 +18,7 @@ import lombok.ToString;
  * @author Marilyn
  */
 @Getter
-@ToString @Entity
+@ToString
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)

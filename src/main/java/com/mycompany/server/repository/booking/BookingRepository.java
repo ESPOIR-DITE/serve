@@ -1,7 +1,6 @@
 package com.mycompany.server.repository.booking;
 
 import com.mycompany.server.domain.Booking;
-import com.mycompany.server.domain.customer.Customer;
 import com.mycompany.server.repository.Repository;
 
 import java.sql.*;
@@ -39,7 +38,6 @@ public class BookingRepository {
         }
         return true;
     }
-
     public Booking read(String id)  {
         Booking booking = null;
         try {
@@ -61,7 +59,7 @@ public class BookingRepository {
     }
     public boolean createBooking(Booking booking)  {
         try {
-            String query = "INSERT INTO BOOKING (CUSTOMEREMAIL,USEREMAIL,VENUEID,DATE) VALUES('"+booking.getCustomerEmail()+"','"+booking.getUserEmail()+"','"+booking.getVenueId()+"','"+booking.getDate()+"')";
+            String query = "INSERT INTO BOOKING (CUSTOMEREMAIL,USEREMAIL,VENUEID,DATE,DESCRIPTION) VALUES('"+booking.getCustomerEmail()+"','"+booking.getUserEmail()+"','"+booking.getVenueId()+"','"+booking.getDate()+"','"+booking.getDescription()+"')";
             stmt.executeUpdate(query);
         } catch (SQLException throwables) {
             throwables.printStackTrace();

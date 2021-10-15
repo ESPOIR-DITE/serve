@@ -38,7 +38,6 @@ public class BookingController {
                 return readAll();
             case "delete":
                 return delete(serverToken);
-
         }
         return null;
     }
